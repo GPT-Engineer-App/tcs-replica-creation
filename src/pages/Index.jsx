@@ -1,118 +1,80 @@
 import { useState } from 'react';
-import { Menu, X, ChevronDown, Search } from 'lucide-react';
+import { Send, Menu, X, MessageSquare } from 'lucide-react';
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Index = () => {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const handleSendMessage = () => {
+    if (inputValue.trim()) {
+      setMessages([...messages, { type: 'user', content: inputValue }]);
+      // Simulated AI response
+      setTimeout(() => {
+        setMessages(prev => [...prev, { type: 'ai', content: `AI response to: "${inputValue}"` }]);
+      }, 1000);
+      setInputValue('');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <nav className="container mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center">
-            <img src="/placeholder.svg" alt="TCS Logo" className="h-8 w-auto mr-4" />
-            <div className="hidden md:flex space-x-4">
-              <a href="#" className="text-gray-600 hover:text-gray-900">What We Do</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Who We Are</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Insights</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Careers</a>
-              <a href="#" className="text-gray-600 hover:text-gray-900">Investors</a>
-            </div>
+    <div className="flex h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className={`${sidebarOpen ? 'block' : 'hidden'} md:block bg-gray-900 text-white w-64 p-4`}>
+        <Button className="w-full mb-4" variant="outline" onClick={() => setMessages([])}>New Chat</Button>
+        <ScrollArea className="h-[calc(100vh-120px)]">
+          <div className="space-y-2">
+            {[1, 2, 3].map((chat) => (
+              <Button key={chat} variant="ghost" className="w-full justify-start text-gray-300 hover:text-white">
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Chat {chat}
+              </Button>
+            ))}
           </div>
-          <div className="flex items-center">
-            <Button variant="ghost" size="icon" className="mr-2">
-              <Search className="h-5 w-5" />
-            </Button>
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-            </Button>
-          </div>
-        </nav>
-        {mobileMenuOpen && (
-          <div className="md:hidden bg-white py-2">
-            <a href="#" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">What We Do</a>
-            <a href="#" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Who We Are</a>
-            <a href="#" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Insights</a>
-            <a href="#" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Careers</a>
-            <a href="#" className="block px-4 py-2 text-gray-600 hover:bg-gray-100">Investors</a>
-          </div>
-        )}
-      </header>
+        </ScrollArea>
+      </div>
 
-      {/* Hero Section */}
-      <section className="relative h-[600px] bg-gray-900 text-white">
-        <img src="/placeholder.svg" alt="Hero Background" className="absolute inset-0 w-full h-full object-cover opacity-50" />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Building on Belief</h1>
-            <p className="text-xl md:text-2xl mb-8">Transforming businesses through technology</p>
-            <Button className="bg-white text-black hover:bg-gray-200">Learn More</Button>
-          </div>
-        </div>
-      </section>
+      {/* Main content */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <header className="bg-white shadow-sm p-4 flex justify-between items-center">
+          <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
+            {sidebarOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </Button>
+          <h1 className="text-xl font-semibold">ChatGPT</h1>
+          <div>{/* Placeholder for potential header actions */}</div>
+        </header>
 
-      {/* Featured Content */}
-      <section className="py-16 bg-gray-100">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-8 text-center">Featured Content</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((item) => (
-              <div key={item} className="bg-white rounded-lg shadow-md overflow-hidden">
-                <img src="/placeholder.svg" alt={`Featured ${item}`} className="w-full h-48 object-cover" />
-                <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2">Featured Title {item}</h3>
-                  <p className="text-gray-600 mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-                  <Button variant="outline">Read More</Button>
-                </div>
+        {/* Chat area */}
+        <ScrollArea className="flex-1 p-4">
+          <div className="max-w-3xl mx-auto space-y-4">
+            {messages.map((message, index) => (
+              <div key={index} className={`p-4 rounded-lg ${message.type === 'user' ? 'bg-blue-500 text-white ml-auto' : 'bg-gray-200'} max-w-[80%]`}>
+                {message.content}
               </div>
             ))}
           </div>
-        </div>
-      </section>
+        </ScrollArea>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="text-lg font-semibold mb-4">About TCS</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-gray-300">Company Overview</a></li>
-                <li><a href="#" className="hover:text-gray-300">Leadership</a></li>
-                <li><a href="#" className="hover:text-gray-300">Corporate Sustainability</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Services</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-gray-300">Digital Transformation</a></li>
-                <li><a href="#" className="hover:text-gray-300">Cloud Services</a></li>
-                <li><a href="#" className="hover:text-gray-300">Consulting</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Industries</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-gray-300">Banking & Finance</a></li>
-                <li><a href="#" className="hover:text-gray-300">Healthcare</a></li>
-                <li><a href="#" className="hover:text-gray-300">Retail</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Connect</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="hover:text-gray-300">Contact Us</a></li>
-                <li><a href="#" className="hover:text-gray-300">Careers</a></li>
-                <li><a href="#" className="hover:text-gray-300">Investor Relations</a></li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-8 pt-8 border-t border-gray-700 text-center">
-            <p>&copy; 2024 Tata Consultancy Services Limited. All Rights Reserved.</p>
+        {/* Input area */}
+        <div className="p-4 bg-white border-t">
+          <div className="max-w-3xl mx-auto flex">
+            <Input
+              className="flex-1 mr-2"
+              placeholder="Send a message..."
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+            />
+            <Button onClick={handleSendMessage}>
+              <Send className="h-4 w-4" />
+            </Button>
           </div>
         </div>
-      </footer>
+      </div>
     </div>
   );
 };
